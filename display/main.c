@@ -30,16 +30,20 @@ uint8_t*  convert_str (char* str)
     return sequence;
 }
 
-uint8_t** create_text(uint8_t** display,uint8_t str_num,  char* str)
+uint8_t** create_text(uint8_t** display,uint8_t str_num,  char* str, uint8_t curLenght)
 {
-    uint8_t offset;
+    uint8_t offsetY, offsetX;
+
+    //calculation for text centering
+    offsetX = LenghtInPixels/2 - (curLenght*SymLenght)/2;
+
     if (str_num==1)
     {
-        offset =1;
+        offsetY =1;
     }
     else if(str_num==2)
     {
-        offset=10;
+        offsetY=10;
     }
     else
     {
@@ -55,7 +59,7 @@ uint8_t** create_text(uint8_t** display,uint8_t str_num,  char* str)
             uint8_t x=j*SymLenght;
             for(int16_t k=0;k<SymLenght;k++)
             {
-                display[i+offset][x+k]=byte_symbols[seq[j]][i][k];
+                display[i+offsetY][x+k+offsetX]=byte_symbols[seq[j]][i][k];
             }
         }
     }
@@ -64,14 +68,14 @@ uint8_t** create_text(uint8_t** display,uint8_t str_num,  char* str)
 
 uint8_t** create_progress_bar(uint8_t** display,uint8_t str_num,  uint8_t percent)
 {
-    uint8_t offset;
+    uint8_t offsetY;
     if (str_num==3)
     {
-        offset =19;
+        offsetY =19;
     }
     else if(str_num==4)
     {
-        offset=26;
+        offsetY=26;
     }
     else
     {
@@ -80,9 +84,9 @@ uint8_t** create_progress_bar(uint8_t** display,uint8_t str_num,  uint8_t percen
     }
     for(uint8_t i=0;i<ProgbarHeight;i++)
     {
-        for(uint8_t j=0;j<LenghtInPixel;j++)
+        for(uint8_t j=0;j<LenghtInPixels;j++)
         {
-            display[i+offset][j]=progress_bar[percent][i][j];
+            display[i+offsetY][j]=progress_bar[percent][i][j];
         }
     }
     return display;
@@ -99,7 +103,7 @@ void write_to_file(char* path,uint8_t* display[])
     }
     for (uint8_t i=0; i<HeightInPixel;i++)
     {
-        for(uint8_t j=0;j<LenghtInPixel;j++)
+        for(uint8_t j=0;j<LenghtInPixels;j++)
             fwrite(&display[i][j],sizeof (uint8_t),1,res);
     }
     /*
@@ -202,21 +206,21 @@ int main(int argc, char **argv)
 
     //create and clear image to dispay
     uint8_t** display = (uint8_t**)malloc(HeightInPixel*sizeof (uint8_t*));
-    for(int i=0;i<LenghtInPixel;i++)
-        display[i]= (uint8_t*)malloc(LenghtInPixel*sizeof (uint8_t));
+    for(int i=0;i<LenghtInPixels;i++)
+        display[i]= (uint8_t*)malloc(LenghtInPixels*sizeof (uint8_t));
 
     for (uint8_t i=0;i<HeightInPixel;i++)
-        for(uint8_t j=0;j<LenghtInPixel;j++)
+        for(uint8_t j=0;j<LenghtInPixels;j++)
             display[i][j]=1;
 
 
     if(isVal1)
     {
-        display = create_text(display,1,text1);
+        display = create_text(display,1,text1,strlen(text1));
     }
     if(isVal2)
     {
-        display = create_text(display,2,text2);
+        display = create_text(display,2,text2,strlen(text2));
     }
 
     if(isVal3)
