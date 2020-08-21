@@ -26,8 +26,20 @@ uint8_t*  convert_str (char* str)
     for (int16_t i=0; i<LenghtInSym;i++)
     {
         sequence[i] = get_num(symbols,SIZE,str[i]);
+        if  (sequence[i] ==255)
+             sequence[i]=0;
     }
     return sequence;
+}
+
+void print_display(uint8_t* display[])
+{
+    for (uint8_t i=0; i<HeightInPixel;i++)
+    {
+        for(uint8_t j=0;j<LenghtInPixels;j++)
+            printf("%d",display[i][j]);
+        printf("\n");
+    }
 }
 
 uint8_t** create_text(uint8_t** display,uint8_t str_num,  char* str, uint8_t curLenght)
@@ -52,6 +64,13 @@ uint8_t** create_text(uint8_t** display,uint8_t str_num,  char* str, uint8_t cur
     }
 
     uint8_t* seq = convert_str(str);
+    // print_display(display);
+
+  //     printf("STR:");
+   //  for (int i =0; i<SymLenght;i++)
+    //     printf("%d ",seq[i]);
+   // printf("\n");
+
     for(uint8_t i=0;i<SymHeight;i++)
     {
         for (uint8_t j=0;j<LenghtInSym;j++)
@@ -63,6 +82,7 @@ uint8_t** create_text(uint8_t** display,uint8_t str_num,  char* str, uint8_t cur
             }
         }
     }
+      //  print_display(display);
     return(display);
 }
 
@@ -114,9 +134,11 @@ void write_to_file(char* path,uint8_t* display[])
         */
 }
 
+
 //MAIN
 int main(int argc, char **argv)
 {
+
     char* text1 = (char*)calloc(sizeof (char),LenghtInSym);
     char* text2 = (char*)calloc(sizeof (char),LenghtInSym);
     char* path = (char*)calloc(sizeof (char),BufferSize);
@@ -212,7 +234,6 @@ int main(int argc, char **argv)
     for (uint8_t i=0;i<HeightInPixel;i++)
         for(uint8_t j=0;j<LenghtInPixels;j++)
             display[i][j]=1;
-
 
     if(isVal1)
     {
