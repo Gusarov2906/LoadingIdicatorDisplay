@@ -3,7 +3,7 @@
 #include <inttypes.h>
 #include <locale.h>
 #include <wchar.h>
-#define SIZE 96
+#define SIZE 159
 #define LenghtInSym 21
 #define LenghtInPixels 128
 #define HeightInPixel 32

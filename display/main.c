@@ -8,7 +8,7 @@
 #include "symbols.h"
 
 
-int8_t get_num(char* array, uint8_t size,char x)
+int8_t get_num(char*array, uint8_t size,char x)
 {
     for (uint8_t i=0;i<size;i++)
     {
@@ -20,16 +20,36 @@ int8_t get_num(char* array, uint8_t size,char x)
     return -1;
 }
 
-uint8_t*  convert_str (char* str)
+uint8_t*  convert_str (char*str)
 {
-    uint8_t* sequence = calloc(LenghtInSym,sizeof (uint8_t));
-    for (int16_t i=0; i<LenghtInSym;i++)
+    uint8_t* sequence = calloc(1,sizeof (uint8_t));
+    uint8_t j =0;
+    for (int16_t i=0; i<LenghtInSym*2-1;i++)
     {
-        sequence[i] = get_num(symbols,SIZE,str[i]);
-        if  (sequence[i] ==255)
-             sequence[i]=0;
+        sequence = (uint8_t*)realloc(sequence,sizeof (uint8_t)*(j+1));
+        sequence[j] = get_num(symbols,SIZE,str[i]);
+        sequence[j+1] = get_num(symbols,SIZE,str[i+1]);
+        //printf("S:%d \n",sequence[j]);
+        if  (sequence[j+1]>=95 && sequence[j+1]!=255&& sequence[j]==255)
+            continue;
+        if  (sequence[j]==255&&sequence[j+1]==255)
+            continue;
+        if  (sequence[j]==255)
+            sequence[j]=0;
+        //printf("!%d %d\n",j,sequence[j]);
+        j++;
     }
+    sequence[j] = 159;
+
     return sequence;
+}
+
+uint8_t get_size_arr (uint8_t* array)
+{
+    uint8_t i =0;
+    while(array[i]!=159)
+        i++;
+    return i;
 }
 
 void print_display(uint8_t* display[])
@@ -42,13 +62,13 @@ void print_display(uint8_t* display[])
     }
 }
 
-uint8_t** create_text(uint8_t** display,uint8_t str_num,  char* str, uint8_t curLenght)
+uint8_t** create_text(uint8_t** display,uint8_t str_num,  char*str)
 {
     uint8_t offsetY, offsetX;
 
     //calculation for text centering
-    offsetX = LenghtInPixels/2 - (curLenght*SymLenght)/2;
 
+    offsetX =0;
     if (str_num==1)
     {
         offsetY =1;
@@ -66,14 +86,23 @@ uint8_t** create_text(uint8_t** display,uint8_t str_num,  char* str, uint8_t cur
     uint8_t* seq = convert_str(str);
     // print_display(display);
 
-  //     printf("STR:");
-   //  for (int i =0; i<SymLenght;i++)
-    //     printf("%d ",seq[i]);
-   // printf("\n");
+    //     printf("STR:");
+
+
+    // printf("\n");
+    uint8_t SeqSize = get_size_arr(seq);
+    if (SeqSize>21)
+    {
+        printf("To many symbols (21 max)\n");
+        exit(-1);
+    }
+    //for (int i =0; i<SeqSize;i++)
+    //   printf("%d ",seq[i]);
+    offsetX = LenghtInPixels/2 - (SeqSize*SymLenght)/2;
 
     for(uint8_t i=0;i<SymHeight;i++)
     {
-        for (uint8_t j=0;j<LenghtInSym;j++)
+        for (uint8_t j=0;j<SeqSize;j++)
         {
             uint8_t x=j*SymLenght;
             for(int16_t k=0;k<SymLenght;k++)
@@ -82,7 +111,7 @@ uint8_t** create_text(uint8_t** display,uint8_t str_num,  char* str, uint8_t cur
             }
         }
     }
-      //  print_display(display);
+    //print_display(display);
     return(display);
 }
 
@@ -112,7 +141,7 @@ uint8_t** create_progress_bar(uint8_t** display,uint8_t str_num,  uint8_t percen
     return display;
 }
 
-void write_to_file(char* path,uint8_t* display[])
+void write_to_file(char*path,uint8_t* display[])
 {
     //write bytes with image to file
     FILE* res =NULL;
@@ -139,12 +168,12 @@ void write_to_file(char* path,uint8_t* display[])
 int main(int argc, char **argv)
 {
 
-    char* text1 = (char*)calloc(sizeof (char),LenghtInSym);
-    char* text2 = (char*)calloc(sizeof (char),LenghtInSym);
-    char* path = (char*)calloc(sizeof (char),BufferSize);
+    char*text1 = (char*)calloc(sizeof (char),LenghtInSym*2);
+    char*text2 = (char*)calloc(sizeof (char),LenghtInSym*2);
+    char*path = (char*)calloc(sizeof (char),BufferSize);
     uint8_t progbar1,progbar2;
     bool isVal1=false,isVal2=false,isVal3=false,isVal4=false,isPath=false;
-    char* tmp = (char*)calloc(BufferSize,sizeof (char));
+    char*tmp = (char*)calloc(BufferSize,sizeof (char));
     //arguments
     while (1)
     {
@@ -168,12 +197,12 @@ int main(int argc, char **argv)
             {
             case 0:
                 tmp= optarg;
-                strncpy(text1,tmp,LenghtInSym);
+                strncpy(text1,tmp,LenghtInSym*2);
                 isVal1 = true;
                 break;
             case 1:
                 tmp= optarg;
-                strncpy(text2,tmp,LenghtInSym);
+                strncpy(text2,tmp,LenghtInSym*2);
                 isVal2 = true;
                 break;
             case 2:
@@ -237,11 +266,11 @@ int main(int argc, char **argv)
 
     if(isVal1)
     {
-        display = create_text(display,1,text1,strlen(text1));
+        display = create_text(display,1,text1);
     }
     if(isVal2)
     {
-        display = create_text(display,2,text2,strlen(text2));
+        display = create_text(display,2,text2);
     }
 
     if(isVal3)
