@@ -10,8 +10,8 @@ using namespace sf;
 
 #define displayLength 128
 #define displayHeight 32
-#define rectangleY 6.f
-#define rectangleX 8.f
+#define rectangleY 8.f
+#define rectangleX 6.f
 
 class Pixel
 {
@@ -123,7 +123,7 @@ Display loadData(const char* filename)
 
         if (i % 2 == 0)
             cout << " ";
-        if (i % 16 == 0)
+        if (i % 12== 0)
             cout << endl;
     }
 
@@ -141,7 +141,7 @@ Display loadData(const char* filename)
             display.matrix[x][y] = true;
         y++;
     }
-    /*cout << endl;
+    cout << endl;
     cout << endl;
     cout << endl;
     for (int i = 0; i < displayHeight; i++)
@@ -155,7 +155,7 @@ Display loadData(const char* filename)
         }
         cout << endl;
     }
-    */
+
     return display;
 }
 
